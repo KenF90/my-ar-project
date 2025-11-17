@@ -1,69 +1,95 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Simple AR Demo</title>
+<head>
+  <meta charset="UTF-8" />
+  <title>AR Treasure Hunt Test</title>
 
-    <!-- Load MindAR + A-Frame -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.0/dist/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+  <!-- Load MindAR + A-Frame -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.0/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
 
-    <style>
-      body, html { margin: 0; padding: 0; overflow: hidden; }
-      #contentText {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        padding: 10px;
-        background: rgba(255,255,255,0.8);
-        font-size: 24px;
-        display: none;
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; }
+    #contentText {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px;
+      background: rgba(255,255,255,0.8);
+      font-size: 24px;
+      display: none;
+      z-index: 10;
+    }
+    #startButton {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-size: 28px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="contentText">Lounge • Minx • Plate</div>
+  <button id="startButton">Start AR</button>
+
+  <a-scene id="ar-scene" mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled: false" embedded style="display:none;">
+    <a-assets>
+      <img id="trigger1" src="Trigger 1.jpg" />
+      <img id="trigger2" src="Trigger 2.jpg" />
+    </a-assets>
+
+    <!-- When Trigger 1 is detected -->
+    <a-image src="#trigger2" mindar-image-target="targetIndex: 0" visible="false" scale="1 1 1" position="0 0 0" id="image2"></a-image>
+
+    <!-- When Trigger 2 is detected -->
+    <a-text value="Well Done!" mindar-image-target="targetIndex: 1" color="green" scale="2 2 2" visible="false" id="wellDoneText"></a-text>
+  </a-scene>
+
+  <script>
+    const startButton = document.getElementById("startButton");
+    const arScene = document.getElementById("ar-scene");
+
+    const image2 = document.getElementById("image2");
+    const wellDoneText = document.getElementById("wellDoneText");
+    const contentText = document.getElementById("contentText");
+
+    // Start AR when button is clicked
+    startButton.addEventListener("click", () => {
+      startButton.style.display = "none"; // hide button
+      arScene.style.display = "block";    // show AR scene
+      arScene.enterVR();                   // start AR camera
+    });
+
+    // Handle triggers
+    arScene.addEventListener("targetFound", (e) => {
+      if (e.detail.targetIndex === 0) {       // Trigger 1
+        image2.setAttribute("visible", "true");
+        contentText.style.display = "block";
       }
-    </style>
-  </head>
+      if (e.detail.targetIndex === 1) {       // Trigger 2
+        wellDoneText.setAttribute("visible", "true");
+        contentText.style.display = "none";
+      }
+    });
 
-  <body>
-    <div id="contentText">Lounge • Minx • Plate</div>
-
-    <a-scene mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled: false" embedded>
-      <a-assets>
-        <img id="trigger1" src="Trigger 1.jpg" />
-        <img id="trigger2" src="Trigger 2.jpg" />
-      </a-assets>
-
-      <!-- When Trigger 1 is detected -->
-      <a-image src="#trigger2" mindar-image-target="targetIndex: 0" visible="false" id="image2"></a-image>
-
-      <!-- When Trigger 2 is detected -->
-      <a-text value="Well Done!" mindar-image-target="targetIndex: 1" color="green" scale="2 2 2" visible="false" id="wellDoneText"></a-text>
-    </a-scene>
-
-    <script>
-      const scene = document.querySelector("a-scene");
-      const image2 = document.getElementById("image2");
-      const wellDoneText = document.getElementById("wellDoneText");
-      const contentText = document.getElementById("contentText");
-
-      scene.addEventListener("targetFound", (e) => {
-        if (e.detail.targetIndex === 0) {       // Trigger 1
-          image2.setAttribute("visible", "true");
-          contentText.style.display = "block";
-        }
-        if (e.detail.targetIndex === 1) {       // Trigger 2
-          wellDoneText.setAttribute("visible", "true");
-          contentText.style.display = "none";
-        }
-      });
-
-      scene.addEventListener("targetLost", (e) => {
-        if (e.detail.targetIndex === 0) {
-          image2.setAttribute("visible", "false");
-          contentText.style.display = "none";
-        }
-        if (e.detail.targetIndex === 1) {
-          wellDoneText.setAttribute("visible", "false");
-        }
-      });
-    </script>
-  </body>
+    arScene.addEventListener("targetLost", (e) => {
+      if (e.detail.targetIndex === 0) {
+        image2.setAttribute("visible", "false");
+        contentText.style.display = "none";
+      }
+      if (e.detail.targetIndex === 1) {
+        wellDoneText.setAttribute("visible", "false");
+      }
+    });
+  </script>
+</body>
 </html>
