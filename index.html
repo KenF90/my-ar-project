@@ -34,23 +34,35 @@
       cursor: pointer;
       z-index: 10;
     }
+    #tip {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      z-index: 10;
+    }
   </style>
 </head>
 
 <body>
   <div id="contentText">Lounge • Minx • Plate</div>
   <button id="startButton">Start AR</button>
+  <div id="tip">Tip: If the camera does not start, open this page in Chrome (Android) or Safari (iPhone).</div>
 
   <a-scene id="ar-scene" mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled: false" embedded style="display:none;">
     <a-assets>
-      <img id="trigger1" src="Trigger 1.jpg" />
-      <img id="trigger2" src="Trigger 2.jpg" />
+      <img id="trigger1" src="Trigger1.jpg" />
+      <img id="trigger2" src="Trigger2.jpg" />
     </a-assets>
 
-    <!-- When Trigger 1 is detected -->
+    <!-- Trigger 1 detected -->
     <a-image src="#trigger2" mindar-image-target="targetIndex: 0" visible="false" scale="1 1 1" position="0 0 0" id="image2"></a-image>
 
-    <!-- When Trigger 2 is detected -->
+    <!-- Trigger 2 detected -->
     <a-text value="Well Done!" mindar-image-target="targetIndex: 1" color="green" scale="2 2 2" visible="false" id="wellDoneText"></a-text>
   </a-scene>
 
@@ -64,9 +76,9 @@
 
     // Start AR when button is clicked
     startButton.addEventListener("click", () => {
-      startButton.style.display = "none"; // hide button
-      arScene.style.display = "block";    // show AR scene
-      arScene.enterVR();                   // start AR camera
+      startButton.style.display = "none";  // hide the button
+      arScene.style.display = "block";     // show AR scene
+      arScene.enterVR();                    // start camera
     });
 
     // Handle triggers
